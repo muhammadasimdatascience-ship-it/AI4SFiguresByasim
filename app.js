@@ -2,6 +2,7 @@
 
 const examples = [
   ["Graphical abstract", "Title: Insect olfaction experiment\nVolatile collection: SPME fiber, Ladybird\nChemical analysis: GC-MS instrument, Chromatogram\nBehavioral assay: Y-tube olfactometer, Air pump", "abstract"],
+  ["Manuscript brief", "TITLE:\nFungal signals and insect responses\n\nIMAGE DIMENSIONS:\n50 × 60 mm, portrait.\n\nSTAGE 1:\nBeneficial fungi:\n- Trichoderma.\n- Entomopathogenic endophytes.\n- AMF.\n\nSTAGE 2:\nCrop plant response:\n- Hormonal reprogramming.\n- Nutritional modification.\n- Primed defence.\n- VOC emission.\n\nSTAGE 3:\nInsect receivers:\n- Herbivores.\n- Natural enemies.\n\nAt the end, show possible outcomes:\n- Improved pest management.\n- Neutral effect.\n- Herbivore facilitation.\n\nInclude a small context-dependence message:\n\"Fungal lifestyle × insect guild × plant defence.\"", "abstract"],
   ["Model accuracy", "Create a bar chart titled Model accuracy.\nDrugCMF: 92, Baseline: 81, Random forest: 76.\nY-axis: Accuracy (%)"],
   ["Training loss", "Create a line chart titled Training loss.\nEpoch 1: 1.24, Epoch 2: 0.87, Epoch 3: 0.61, Epoch 4: 0.45, Epoch 5: 0.34.\nX-axis: Epoch\nY-axis: Loss"],
   ["Scatter plot", "Create a scatter plot titled \"Dataset size vs. accuracy\".\n(100, 68), (200, 75), (300, 79), (450, 87), (650, 91).\nX-axis: Training samples\nY-axis: Accuracy (%)"],
@@ -15,6 +16,7 @@ const prompt = get("prompt");
 const kind = get("kind");
 const palette = get("palette");
 const error = get("error");
+const promptTemplate = get("prompt-template");
 const status = get("export-status");
 const sheet = get("sheet");
 let current;
@@ -33,10 +35,12 @@ function generate() {
   try {
     preview(Figures.parse(prompt.value, kind.value));
     error.hidden = true;
+    promptTemplate.hidden = true;
     prompt.removeAttribute("aria-invalid");
   } catch (problem) {
-    error.textContent = problem.message + " The preview still shows your previous figure.";
+    error.textContent = problem.message;
     error.hidden = false;
+    promptTemplate.hidden = !Figures.isAbstract(prompt.value, kind.value);
     prompt.setAttribute("aria-invalid", "true");
     prompt.focus();
   }
@@ -53,6 +57,13 @@ prompt.addEventListener("keydown", (event) => {
   }
 });
 palette.addEventListener("change", () => preview(current));
+promptTemplate.addEventListener("click", () => {
+  const [example] = examples;
+  prompt.value = example[1];
+  kind.value = example[2];
+  generate();
+  prompt.focus();
+});
 for (const [label, text, exampleKind = "auto"] of examples) {
   const button = document.createElement("button");
   button.type = "button";

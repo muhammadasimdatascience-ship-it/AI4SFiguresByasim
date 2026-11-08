@@ -11,12 +11,17 @@ const Figures = (() => {
   };
   const numeric = "[+-]?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?(?:e[+-]?\\d+)?|[+-]?\\.\\d+(?:e[+-]?\\d+)?";
   const valueOf = (token) => Number(token.replaceAll(",", ""));
-  const clean = (value) => value.trim().replace(/^[“"']|[”"']$/g, "").trim();
+  const clean = (value) => value.trim().replace(/^[“‘"']|[”’"']$/g, "").trim();
+
+  function isAbstract(input, requestedKind) {
+    return requestedKind === "abstract" || (requestedKind === "auto" &&
+      /\b(?:graphical abstract|illustrated workflow|panel\s+[a-f1-6]\s*[:,.)-]|stage\s+[1-6]\s*:)/i.test(input));
+  }
 
   function parse(prompt, requestedKind) {
     const input = prompt.trim();
     const kind = requestedKind !== "auto" ? requestedKind :
-      /\b(?:graphical abstract|illustrated workflow)\b/i.test(input) ? "abstract" :
+      isAbstract(input, requestedKind) ? "abstract" :
       /\b(?:scatter|xy plot)\b/i.test(input) ? "scatter" :
       /\b(?:line (?:chart|graph|plot)|trend)\b/i.test(input) ? "line" :
       /\b(?:pie|donut|doughnut)\b/i.test(input) ? "pie" :
@@ -260,12 +265,12 @@ const Figures = (() => {
     [/\b(?:ladyb(?:ird|ug)|insect|beetle)\b/i,
       '<path d="M38 38 27 29m9 21-13-1m14 13-12 8m37-32 11-9M64 50l13-1M63 62l12 8M45 28l-5-8m15 8 5-8"/><circle cx="50" cy="34" r="10" fill="currentColor"/><ellipse cx="50" cy="56" rx="18" ry="24" fill="#e88d78"/><path d="M50 32v47"/><g fill="currentColor" stroke="none"><circle cx="42" cy="48" r="2.7"/><circle cx="58" cy="48" r="2.7"/><circle cx="41" cy="60" r="2.7"/><circle cx="59" cy="60" r="2.7"/><circle cx="45" cy="69" r="2"/><circle cx="55" cy="69" r="2"/></g>'],
     [/\b(?:gc[-– ]?(?:ms|ead)|spectrometer|chromatograph|instrument)\b/i,
-      '<rect x="13" y="34" width="59" height="43" rx="5" fill="white"/><rect x="72" y="40" width="15" height="37" rx="4" fill="white"/><rect x="25" y="41" width="34" height="28" rx="3" fill="currentColor" opacity=".16"/><circle cx="42" cy="55" r="9"/><path d="M37 34V24h19v10m-9-10V13m29 37h7m-7 7h7m-7 7h7M13 78h74"/>'],
+      '<ellipse cx="50" cy="84" rx="45" ry="5" fill="#c6d7d6" stroke="none"/><rect x="7" y="31" width="60" height="48" rx="4" fill="#eef1ef"/><rect x="67" y="38" width="25" height="41" rx="3" fill="#d5e1df"/><rect x="14" y="37" width="26" height="34" rx="2" fill="#dce7e6"/><circle cx="27" cy="54" r="9" fill="#fff"/><rect x="45" y="38" width="17" height="31" rx="2" fill="#f9fbfa"/><path d="M48 47h11m-11 7h11m-11 7h11M15 76h49m8-17h15m-15 6h15m-15 6h15" stroke-width="1.4"/><rect x="72" y="44" width="14" height="10" rx="1.4" fill="#72ad9f"/><path d="M31 30V21h18v9m-13-9V10h8v11" fill="#dce7e6"/><path d="M25 80v4m45-4v4" stroke-width="4"/>'],
     [/\b(?:chromatogram|spectrum|signal|sensor|readout)\b/i,
-      '<rect x="11" y="23" width="78" height="50" rx="5" fill="white"/><path d="M20 61h60M20 61V33m3 23 7-1 3-10 3 10 7 1 5-21 4 20 7-1 3-13 3 13 5 1 3-8 3 8 4-1m-30 19v7m-14 0h28"/>'],
+      '<rect x="7" y="22" width="86" height="53" rx="5" fill="#e8eeec"/><rect x="13" y="28" width="74" height="40" rx="2" fill="white"/><path d="M19 60h62M19 60V34m0 18h62m-62-8h62m-49-10v26m13-26v26m13-26v26m13-26v26" stroke="#cedbd7" stroke-width=".8"/><path d="m20 58 7-1 3-7 2 7 7 1 5-19 4 18 7 1 3-9 3 9 5-1 4-22 4 21 4 1 3-3 2 2" stroke-width="1.7"/><path d="M50 75v8m-16 1h32" stroke-width="3.4"/>'],
     [/\b(?:y[-– ]?tube|olfactometer)\b/i,
-      '<path d="m19 22 31 31 31-31M50 53v27" stroke-width="12"/><path d="m19 22 31 31 31-31M50 53v27" stroke="white" stroke-width="8"/><path d="m26 29 10 10m-4 0h4v-4m38-6-10 10m0-4v4h4M15 18l8 8m54 0 8-8m-40 62h10"/><circle cx="50" cy="71" r="2.5" fill="#d35d4a" stroke="none"/>'],
-    [/\b(?:pump|airflow|flowmeter|filter)\b/i,
+      '<path d="M14 19q-9 0-9 10v30q0 11 10 11v8m71-59q9 0 9 10v30q0 11-10 11v8" stroke-width="1.65"/><path d="m17 19 33 34 33-34M50 53v31" stroke="#37575f" stroke-width="11"/><path d="m17 19 33 34 33-34M50 53v31" stroke="#d0e6e3" stroke-width="7"/><path d="m25 27 10 10m-4 0h4v-4m40-6-10 10m0-4v4h4m-23 44h8" stroke-width="1.45"/><rect x="3" y="31" width="8" height="18" rx="2" fill="#ede3cc" stroke-width="1.25"/><rect x="89" y="31" width="8" height="18" rx="2" fill="#ede3cc" stroke-width="1.25"/><path d="M6 36h3m-3 4h3m-3 4h3m83-8h3m-3 4h3m-3 4h3" stroke-width=".8"/><path d="M11 77h8v4l3 4v7H8v-7l3-4zm70 0h8v4l3 4v7H78v-7l3-4z" fill="#d8e7e6" stroke-width="1.3"/><ellipse cx="50" cy="72" rx="2.1" ry="3" fill="#cc6752" stroke="none"/>'],
+    [/\b(?:pump|airflow|flowmeters?|filter)\b/i,
       '<rect x="22" y="41" width="51" height="37" rx="7" fill="white"/><circle cx="39" cy="57" r="8"/><path d="M39 57l3-4m10 7h12m-12 6h12M66 41V31q0-9 9-9h11m-4-4 4 4-4 4M27 78v4m41-4v4"/>'],
     [/\b(?:microscope|microscopy|sem)\b/i,
       '<path d="M44 20h13v9H44zm6 9 14 16-9 8-14-16zm8 19-5 5m1-16c17 2 21 14 18 24-3 11-14 15-25 15H31m-7-17h38M27 76h49v7H27z" fill="white"/>'],
@@ -278,36 +283,92 @@ const Figures = (() => {
     [/\b(?:model|ai|embeddings?|neural|network)\b/i,
       '<path d="m23 36 27-12 27 12m-54 0v29l27 12 27-12V36M23 36l54 29M77 36 23 65m27-41v53"/><g fill="white"><circle cx="23" cy="36" r="6"/><circle cx="23" cy="65" r="6"/><circle cx="50" cy="24" r="6"/><circle cx="50" cy="77" r="6"/><circle cx="77" cy="36" r="6"/><circle cx="77" cy="65" r="6"/></g>'],
   ];
+  symbols.push(
+    [/\b(?:trichoderma|fungi|fungal|amf|mycorrhiza|endophytes?)\b/i,
+      '<path d="M17 76c16-8 45-8 66 0M31 70V40m19 29V27m19 44V45M21 33l10 8 10-8m-3-12 12 8 12-8m-2 19 9 6 9-6"/><g fill="currentColor" stroke="none"><circle cx="21" cy="32" r="4"/><circle cx="41" cy="32" r="4"/><circle cx="38" cy="20" r="4"/><circle cx="62" cy="20" r="4"/><circle cx="60" cy="39" r="4"/><circle cx="78" cy="39" r="4"/></g>'],
+    [/\b(?:plant|hormonal|nutritional|defen[cs]e|crop)\b/i,
+      '<path d="M50 79V35m0 25C33 61 26 49 25 40c13 0 22 4 25 20zm0-9c4-18 15-22 26-21-1 10-12 21-26 21zM38 80h24m-12-1-8 9m8-9 8 9" fill="white"/>'],
+    [/\b(?:voc|volatile|emission)\b/i,
+      '<path d="M18 34c16-17 23 17 39 0s23-8 25-1M18 50c16-17 23 17 39 0s23-8 25-1M18 66c16-17 23 17 39 0s23-8 25-1"/>'],
+    [/\b(?:herbivores?|natural enemies|wasps?|predators?)\b/i,
+      '<ellipse cx="50" cy="54" rx="14" ry="22" fill="white"/><circle cx="50" cy="32" r="6" fill="currentColor"/><path d="M46 29l-6-10m14 10 6-10M38 43l-11-6m9 17H22m17 12-12 9m35-32 11-6m-9 17h14m-17 12 12 9M50 44v25"/>'],
+    [/\bneutral effect\b/i, '<circle cx="50" cy="50" r="29" fill="white"/><path d="M38 50h24"/>'],
+    [/\b(?:pest management|facilitation)\b/i, '<circle cx="50" cy="50" r="29" fill="white"/><path d="m34 51 10 10 23-24"/>'],
+  );
   const genericSymbol = '<rect x="25" y="23" width="50" height="54" rx="5" fill="white"/><path d="M38 39h24m-24 11h24m-24 11h14"/>';
 
   function parseAbstract(input) {
-    let title = "Graphical abstract";
+    const instructions = "Give each stage a heading and a short list of items. Use Stage 1:, Stage 2:, or Panel A: to start each section.";
+    const titled = input.match(/\b(?:graphical abstract|illustrated workflow)\s+titled\s+["“]([^"”]+)["”]/i);
+    const explicitTitle = input.match(/^\s*title\s*:[ \t]*\n?((?:(?!\n\s*(?:\n|(?:image dimensions|style|stage\s+\d+|panel\s+[a-f1-6]|export)\b))[^\n]|\n(?!\s*\n))+)/im);
+    let title = explicitTitle ? clean(explicitTitle[1].trim().split(/\n(?=\s*(?:stage\s+\d+|panel\s+[a-f1-6]|image dimensions|style|export)\b)/i)[0].replace(/\s+/g, " ")) :
+      titled ? clean(titled[1]) : "Graphical abstract";
     const panels = [];
-    for (const line of input.split("\n").map((part) => part.trim()).filter(Boolean)) {
-      const titleMatch = line.match(/^(?:title\s*:|(?:create (?:a )?)?(?:graphical abstract|illustrated workflow)\s+titled\s+)\s*(.+)$/i);
-      if (titleMatch) {
-        title = clean(titleMatch[1]);
-        continue;
+    const contextMatch = input.match(/^\s*(?:context\s*:|include\b[^\n:]*context[- ]dependence[^\n:]*:)[ \t]*\n?([^\n]+)/im);
+    const context = contextMatch ? clean(contextMatch[1]) : "";
+    const sectionPattern = /\b(?:stage\s+([1-6])\s*:|panel\s+([a-f1-6])\s*(?:[,.)-]|:)|(?:at the end,\s*)?show (?:three |the )?possible outcomes?(?: symbols?)?\s*:|outcomes?\s*:)/gi;
+    const marks = Array.from(input.matchAll(sectionPattern));
+    const stop = /\n\s*(?:include\b[^\n]*context[- ]dependence|context\s*:|export\s*:)/i;
+    const trimItem = (value) => clean(value.trim().replace(/\.$/, ""));
+    const splitItems = (value) => value.split(/\s*(?:,|;|→|->)\s*/).map(trimItem).filter(Boolean);
+
+    if (marks.length) {
+      for (const [index, marker] of marks.entries()) {
+        const end = marks[index + 1]?.index ?? input.length;
+        const body = input.slice(marker.index + marker[0].length, end).split(stop)[0].trim();
+        const lines = body.split(/\n/).map((line) => line.trim()).filter(Boolean);
+        const bullets = lines.filter((line) => /^[-*•]\s+/.test(line)).map((line) => trimItem(line.replace(/^[-*•]\s+/, "")));
+        const fallback = marker[1] ? "Stage " + marker[1] : marker[2] ? "Panel " + marker[2].toUpperCase() : "Possible outcomes";
+        let heading = fallback;
+        let items = bullets;
+        if (bullets.length && lines[0] && !/^[-*•]\s+/.test(lines[0])) {
+          heading = trimItem(lines[0].replace(/:$/, "").replace(/^(?:show\s+|a\s+)|\s+showing$/gi, "")).replace(/^./, (letter) => letter.toUpperCase());
+        } else if (!bullets.length) {
+          const named = body.match(/^([^:\n]{1,58}):\s*([\s\S]*)$/);
+          heading = named ? trimItem(named[1]) : fallback;
+          const description = named ? named[2] : body;
+          const parts = splitItems(description);
+          const prose = parts.some((item) => item.length > 46 || /^(?:show|draw|include|use|make)\b/i.test(item));
+          if (prose) {
+            const known = symbols.map(([pattern]) => description.match(pattern)).filter(Boolean).sort((a, b) => a.index - b.index);
+            items = known.slice(0, 4).map(([word]) => {
+              if (/^(?:spme|sample|vial)$/i.test(word) && /\bspme\b/i.test(description)) return "SPME fiber";
+              if (/^gc[-– ]?ms$/i.test(word)) return "GC–MS instrument";
+              if (/^y[-– ]?tube$/i.test(word)) return "Y-tube olfactometer";
+              return word[0].toUpperCase() + word.slice(1);
+            });
+          } else items = parts;
+        }
+        if (!items.length || items.length > 4) throw Error(heading + " needs one to four short items. " + instructions);
+        panels.push({ heading, items });
       }
-      const parts = line.match(/^([^:]+):\s*(.+)$/);
-      if (!parts) throw Error("Write one panel per line using Heading: item, item. Add an optional Title: line above the panels.");
-      const heading = parts[1].trim().replace(/^Panel\s+[A-F0-9]+[.) -]+\s*/i, "").trim();
-      const items = parts[2].split(/\s*(?:,|;|→|->)\s*/).map(clean).filter(Boolean);
-      if (!heading || !items.length || items.length > 4) throw Error("Give each panel a heading and between one and four items.");
-      panels.push({ heading, items });
+    } else {
+      for (const line of input.split("\n").map((part) => part.trim()).filter(Boolean)) {
+        const titleMatch = line.match(/^(?:title\s*:|(?:create (?:a )?)?(?:graphical abstract|illustrated workflow)\s+titled\s+)\s*(.+)$/i);
+        if (titleMatch) {
+          title = clean(titleMatch[1]);
+          continue;
+        }
+        if (/^context\s*:/i.test(line)) continue;
+        const parts = line.match(/^([^:]+):\s*(.+)$/);
+        if (!parts) throw Error(instructions);
+        const items = splitItems(parts[2]);
+        if (!items.length || items.length > 4) throw Error("Each panel needs one to four short items.");
+        panels.push({ heading: parts[1].trim(), items });
+      }
     }
-    if (!panels.length || panels.length > 6) throw Error("Use between one and six panels, with one panel per line.");
-    return { kind: "abstract", title, panels };
+    if (!panels.length || panels.length > 6) throw Error("Use between one and six panels. " + instructions);
+    return { kind: "abstract", title, panels, context, portrait: /\bportrait\b/i.test(input) };
   }
 
-  function abstractSvg({ title, panels }, color) {
-    const columns = Math.min(panels.length, 3);
-    const width = 920, inset = 34, gap = 22;
+  function abstractSvg({ title, panels, context, portrait }, color) {
+    const columns = Math.min(panels.length, portrait ? 2 : 3);
+    const width = portrait ? 650 : 920, inset = 34, gap = 22;
     const panelWidth = (width - inset * 2 - (columns - 1) * gap) / columns;
     const panelHeight = panels.some(({ items }) => items.length > 2) ? 316 : 252;
     const titleLines = wrap(title, 50, 2);
     const top = 100 + (titleLines.length - 1) * 33;
-    const height = top + Math.ceil(panels.length / columns) * (panelHeight + gap) - gap + inset;
+    const height = top + Math.ceil(panels.length / columns) * (panelHeight + gap) - gap + inset + (context ? 28 : 0);
     const root = el("svg", {
       xmlns: NS, width, height, viewBox: "0 0 " + width + " " + height, role: "img",
       "aria-label": title + ", graphical abstract with " + panels.length + " panels",
@@ -327,17 +388,19 @@ const Figures = (() => {
       wrap(heading, Math.floor((panelWidth - 69) / 9), 2).forEach((line, i) => write(panel, 55, 36 + i * 18, line, { "font-size": 17, "font-weight": 700 }));
       panel.append(el("line", { x1: 17, x2: panelWidth - 17, y1: 63, y2: 63, stroke, "stroke-width": 1.5 }));
       const stacked = items.length > 2;
-      const iconSize = items.length === 1 ? 109 : 78;
+      const iconSize = items.length === 1 ? 138 : stacked ? 76 : 102;
       items.forEach((label, itemIndex) => {
         const rowCount = stacked ? Math.min(2, items.length - Math.floor(itemIndex / 2) * 2) : items.length;
         const center = panelWidth * ((itemIndex % 2) + .5) / rowCount;
-        const y = stacked ? 74 + Math.floor(itemIndex / 2) * 112 : 102;
+        const y = stacked ? 74 + Math.floor(itemIndex / 2) * 112 : 83;
         panel.append(el("circle", { cx: center, cy: y + iconSize / 2, r: iconSize * .49, fill: color, "fill-opacity": .08 }));
         const icon = el("g", {
           transform: "translate(" + (center - iconSize / 2) + " " + y + ") scale(" + (iconSize / 100) + ")",
           color, stroke: "currentColor", fill: "none", "stroke-width": 2.8, "stroke-linecap": "round", "stroke-linejoin": "round",
         });
-        icon.innerHTML = symbols.find(([pattern]) => pattern.test(label))?.[1] ?? genericSymbol;
+        icon.innerHTML = /\bfacilitation\b/i.test(label) ?
+          '<circle cx="50" cy="50" r="29" fill="white"/><path d="M50 63V37m-11 11 11-11 11 11"/>' :
+          symbols.find(([pattern]) => pattern.test(label))?.[1] ?? genericSymbol;
         panel.append(icon);
         wrap(label, Math.min(28, Math.floor((panelWidth / rowCount - 12) / 7)), 2).forEach((line, i) => {
           write(panel, center, y + iconSize + 15 + i * 15, line, { "font-size": 13, "font-weight": 700, "text-anchor": "middle" });
@@ -345,8 +408,13 @@ const Figures = (() => {
       });
       root.append(panel);
     });
+    if (context) {
+      wrap(context, portrait ? 56 : 74, 2).forEach((line, index) => {
+        write(root, width / 2, height - 40 + index * 16, line, { "text-anchor": "middle", "font-size": 15, "font-weight": 700, fill: color });
+      });
+    }
     return root;
   }
 
-  return { kinds, parse, svg };
+  return { kinds, isAbstract, parse, svg };
 })();

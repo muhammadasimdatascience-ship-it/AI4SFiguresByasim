@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Create scientific illustrations, graphical abstracts, and data figures from a prompt.">
+  <meta name="description" content="Create research charts, graphical abstracts, and scientific schematics from a prompt.">
   <title>AI4SFiguresByasim</title>
   <link rel="stylesheet" href="./styles.css">
   <script src="./figures.js" defer></script>
   <script src="./app.js" defer></script>
-  <script src="./image-studio.js" defer></script>
+  <script src="./accounts.js" defer></script>
+  <script src="./workspace.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -17,18 +18,24 @@
         <img class="brand-logo" src="./ai4science-logo.png" alt="AI4Science" width="145" height="47">
         <span class="brand-name">AI4SFiguresByasim</span>
       </a>
-      <span class="pill"><i></i> Free tools · No API key</span>
+      <div class="account-actions">
+        <span class="pill" id="account-user" hidden></span>
+        <button type="button" id="login">Log in</button>
+        <button type="button" id="signup" class="primary-small">Sign up</button>
+        <button type="button" id="logout" hidden>Log out</button>
+      </div>
     </div>
   </header>
   <main>
     <section class="intro" aria-labelledby="intro-title">
-      <p class="eyebrow"><span></span> RESEARCH FIGURE WORKSPACE</p>
+      <p class="eyebrow"><span></span> FREE RESEARCH FIGURE WORKSPACE</p>
       <h1 id="intro-title">Turn prompts into figures.</h1>
-      <p>Create data charts, illustrated workflows, and scientific images for your paper, slides, or report.</p>
+      <p>Build data charts, graphical abstracts, and illustrated workflows. Preview and export your figure for free.</p>
     </section>
-    <nav class="mode-switch" aria-label="Figure studio mode">
-      <button type="button" id="vector-mode" aria-controls="vector-workspace" aria-pressed="true">Charts &amp; schematics</button>
-      <button type="button" id="image-mode" aria-controls="image-workspace" aria-pressed="false">AI image generator <span>NEW</span></button>
+    <nav class="workspace-tabs" aria-label="Workspace tools">
+      <button type="button" data-tool="vector" aria-pressed="true">Figure studio</button>
+      <button type="button" data-tool="table" aria-pressed="false">Table builder</button>
+      <button type="button" data-tool="chat" aria-pressed="false">Ask AI <span>LOCAL</span></button>
     </nav>
     <div class="workspace" id="vector-workspace">
       <section class="panel input-panel" aria-labelledby="input-title">
@@ -39,8 +46,8 @@
         <form id="form">
           <div class="field">
             <label for="prompt">Figure prompt</label>
-            <textarea id="prompt" maxlength="1800" rows="6" required spellcheck="true" aria-describedby="prompt-help" placeholder="Create a bar chart titled Model accuracy. DrugCMF: 92, Baseline: 81, Random forest: 76. Y-axis: Accuracy (%)."></textarea>
-            <p id="prompt-help" class="hint">Use label: value for charts, (x, y) pairs for scatter plots, and arrows (→) between workflow steps. For illustrated panels, try the Graphical abstract example.</p>
+            <textarea id="prompt" maxlength="12000" rows="8" required spellcheck="true" aria-describedby="prompt-help" placeholder="Paste your prompt here. For a graphical abstract, use Stage 1, Stage 2, and Stage 3 headings with the items you want in each panel."></textarea>
+            <p id="prompt-help" class="hint">Paste a scientific brief with Stage or Panel headings. For a chart, provide labels and values.</p>
           </div>
           <div class="settings">
             <div class="field"><label for="kind">Figure type</label>
@@ -53,7 +60,10 @@
             </div>
           </div>
           <button class="generate" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2ZM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"/></svg> Generate figure</button>
+          <button type="button" class="outline-button secondary-action" id="figure-ai">Interpret with local AI</button>
+          <p id="figure-ai-status" class="hint" aria-live="polite"></p>
           <p id="error" role="alert" hidden></p>
+          <button type="button" class="outline-button" id="prompt-template" hidden>Load a graphical abstract example</button>
         </form>
         <div class="examples">
           <h3>TRY AN EXAMPLE</h3>
@@ -75,83 +85,63 @@
         <p id="export-status" class="hint" aria-live="polite"></p>
       </section>
     </div>
-    <div class="workspace" id="image-workspace" hidden>
-      <section class="panel input-panel" aria-labelledby="image-input-title">
-        <div class="panel-heading">
-          <span class="step">01</span>
-          <div><h2 id="image-input-title">Describe your scientific image</h2><p>Give each panel a purpose and specify its labels.</p></div>
-        </div>
-        <form id="image-form">
-          <div class="field">
-            <label for="image-prompt">Image prompt</label>
-            <textarea id="image-prompt" maxlength="4000" rows="7" required aria-describedby="image-prompt-help" placeholder="Create a three-panel graphical abstract showing sample collection, GC–MS analysis, and a Y-tube olfactometer assay."></textarea>
-            <p id="image-prompt-help" class="hint">Specify what to draw, the order of panels, and the exact labels you want.</p>
+    <div class="workspace" id="table-workspace" hidden>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">01</span><div><h2>Describe or paste a table</h2><p>Bring your data or start with an example.</p></div></div>
+        <form id="table-form">
+          <div class="field"><label for="table-prompt">Table input</label>
+            <textarea id="table-prompt" maxlength="12000" rows="8" required aria-describedby="table-help" placeholder="Paste CSV, a Markdown table, or write what you want compared."></textarea>
+            <p class="hint" id="table-help">Create a table directly from data, or interpret a natural-language request with local AI.</p>
           </div>
-          <div class="settings">
-            <div class="field"><label for="image-style">Figure style</label>
-              <select id="image-style">
-                <option value="abstract">Graphical abstract</option>
-                <option value="realistic">Realistic lab equipment</option>
-                <option value="apparatus">Laboratory schematic</option>
-                <option value="biology">Biological illustration</option>
-              </select>
-            </div>
-            <div class="field"><label for="image-ratio">Aspect ratio</label>
-              <select id="image-ratio">
-                <option value="3:2">Landscape · 3:2</option>
-                <option value="1:1">Square · 1:1</option>
-                <option value="2:3">Portrait · 2:3</option>
-              </select>
-            </div>
-          </div>
-          <div class="field reference-field">
-            <label for="image-quality">Rendering quality</label>
-            <select id="image-quality" aria-describedby="quality-help">
-              <option value="medium">Detailed · better for labels</option>
-              <option value="low">Draft · uses less allowance</option>
-            </select>
-            <p id="quality-help" class="hint">For a first pass, try Draft. Detailed uses more of your Puter allowance.</p>
-          </div>
-          <div class="field reference-field">
-            <label for="image-reference">Reference image <span>Optional</span></label>
-            <input type="file" id="image-reference" accept="image/png,image/jpeg,image/webp" aria-describedby="reference-help">
-            <p id="reference-help" class="hint">PNG, JPEG, or WebP up to 10 MB. The prompt and reference are sent to Puter when you generate.</p>
-          </div>
-          <div class="provider">
-            <div><strong>AI generation by Puter</strong><p>Sign in to use your free monthly allowance. Puter manages any upgrades.</p></div>
-            <button type="button" id="image-signin" disabled>Connect Puter</button>
-          </div>
-          <button class="generate" type="submit" id="image-generate" disabled>Generate image</button>
-          <p id="image-error" class="form-error" role="alert" hidden></p>
+          <button class="generate" type="submit">Build table from data</button>
+          <button type="button" class="outline-button secondary-action" id="table-ai">Build table with local AI</button>
+          <p class="hint" id="table-ai-status" aria-live="polite"></p>
+          <p class="form-error" id="table-error" role="alert" hidden></p>
         </form>
-        <div class="examples">
-          <h3>TRY AN EXAMPLE</h3>
-          <div id="image-examples" class="chips"></div>
-        </div>
+        <div class="examples"><h3>TRY AN EXAMPLE</h3><div class="chips"><button type="button" id="table-example">Model comparison</button></div></div>
       </section>
-      <section class="panel output-panel" aria-labelledby="image-preview-title">
-        <div class="panel-heading preview-heading">
-          <span class="step">02</span>
-          <div><h2 id="image-preview-title">Image preview</h2><p id="image-status" aria-live="polite">Your generated image will appear here.</p></div>
-          <span class="tag">AI image</span>
-        </div>
-        <div class="canvas image-canvas" id="image-canvas" aria-busy="false">
-          <div class="image-placeholder" id="image-placeholder">
-            <svg viewBox="0 0 72 56" width="72" height="56" fill="none" aria-hidden="true"><rect x="3" y="6" width="66" height="44" rx="7"/><path d="M24 12v32m24-32v32M8 36l5-9 5 6m11 1 5-13 7 8m13 4 4-5 5 6"/><circle cx="58" cy="18" r="3"/></svg>
-            <strong>Ready for your idea</strong>
-            <p>Describe an apparatus, a biological process, or a multi-panel experiment.</p>
-            <button type="button" id="free-preview">Try a free schematic instead</button>
-          </div>
-          <div class="sheet image-sheet" id="image-sheet" hidden></div>
-        </div>
-        <div class="exports">
-          <span>Export image</span>
-          <button type="button" id="image-download" disabled>Download image</button>
-        </div>
-        <p class="hint">Check labels, apparatus, and molecular structures against your source before publication.</p>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">02</span><div><h2>Table preview</h2><p>Download the table as CSV for your spreadsheet or manuscript.</p></div></div>
+        <div id="table-preview" class="table-preview"><p>Build a table to preview it here.</p></div>
+        <div class="exports"><span id="table-meta">No table yet</span><button type="button" id="table-download" disabled>Download CSV</button></div>
       </section>
     </div>
-    <footer><span>AI4SFiguresByasim</span><span>Charts and schematics run in your browser.</span></footer>
+    <div class="workspace chat-workspace" id="chat-workspace" hidden>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">01</span><div><h2>Ask a question</h2><p>A free assistant that runs on your device.</p></div></div>
+        <p class="hint local-note">The first run downloads a model and needs a WebGPU-capable browser. The assistant can answer questions and explain concepts from its training. It has no live web access.</p>
+        <form id="chat-form">
+          <div class="field"><label for="chat-prompt">Your question</label>
+            <textarea id="chat-prompt" maxlength="2400" rows="4" required placeholder="What is the difference between GC–MS and GC–EAD?"></textarea>
+          </div>
+          <button class="generate" type="submit">Ask local AI</button>
+          <p class="hint" id="chat-status" aria-live="polite"></p>
+          <p class="form-error" id="chat-error" role="alert" hidden></p>
+        </form>
+      </section>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">02</span><div><h2>Conversation</h2><p>Follow-up questions use the recent conversation.</p></div></div>
+        <div id="chat-replies" class="chat-replies" aria-live="polite"><p class="hint">Your conversation will appear here.</p></div>
+      </section>
+    </div>
+    <footer><span>AI4SFiguresByasim</span><span>No API keys or subscriptions.</span></footer>
   </main>
+  <dialog id="account-dialog" aria-labelledby="account-title">
+    <div class="dialog-header">
+      <div><p class="eyebrow"><span></span> YOUR ACCOUNT</p><h2 id="account-title">Log in</h2></div>
+      <button type="button" class="outline-button" id="account-close" aria-label="Close account form">Close</button>
+    </div>
+    <p class="hint" id="account-notice" aria-live="polite"></p>
+    <form id="account-form" hidden>
+      <div class="field"><label for="account-name">Username</label>
+        <input id="account-name" autocomplete="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_]{3,32}" placeholder="e.g. asim_lab">
+      </div>
+      <div class="field"><label for="account-password">Password</label>
+        <input id="account-password" type="password" required minlength="12" maxlength="128" autocomplete="current-password">
+      </div>
+      <button class="generate" type="submit" id="account-submit">Log in</button>
+      <p class="form-error" id="account-error" role="alert" hidden></p>
+    </form>
+  </dialog>
 </body>
 </html>
