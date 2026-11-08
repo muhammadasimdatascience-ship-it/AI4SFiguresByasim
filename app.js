@@ -1,6 +1,7 @@
 "use strict";
 
 const examples = [
+  ["Graphical abstract", "Title: Insect olfaction experiment\nVolatile collection: SPME fiber, Ladybird\nChemical analysis: GC-MS instrument, Chromatogram\nBehavioral assay: Y-tube olfactometer, Air pump", "abstract"],
   ["Model accuracy", "Create a bar chart titled Model accuracy.\nDrugCMF: 92, Baseline: 81, Random forest: 76.\nY-axis: Accuracy (%)"],
   ["Training loss", "Create a line chart titled Training loss.\nEpoch 1: 1.24, Epoch 2: 0.87, Epoch 3: 0.61, Epoch 4: 0.45, Epoch 5: 0.34.\nX-axis: Epoch\nY-axis: Loss"],
   ["Scatter plot", "Create a scatter plot titled \"Dataset size vs. accuracy\".\n(100, 68), (200, 75), (300, 79), (450, 87), (650, 91).\nX-axis: Training samples\nY-axis: Accuracy (%)"],
@@ -52,13 +53,13 @@ prompt.addEventListener("keydown", (event) => {
   }
 });
 palette.addEventListener("change", () => preview(current));
-for (const [label, text] of examples) {
+for (const [label, text, exampleKind = "auto"] of examples) {
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = label;
   button.addEventListener("click", () => {
     prompt.value = text;
-    kind.value = "auto";
+    kind.value = exampleKind;
     generate();
   });
   get("examples").append(button);
@@ -113,4 +114,4 @@ png.addEventListener("click", async () => {
   }
 });
 
-preview(Figures.parse(examples[0][1], "auto"), true);
+preview(Figures.parse(examples[0][1], "abstract"), true);

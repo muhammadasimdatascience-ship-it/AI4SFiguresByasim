@@ -1,8 +1,9 @@
 # AI4SFiguresByasim
 
-A free, browser-based workspace for creating research charts and simple workflow diagrams from text prompts. Figures export as vector SVG or high-resolution PNG.
+A browser-based research figure workspace.
 
-The generator uses the values or steps in the prompt. It supports bar charts, line charts, scatter plots, pie charts, and linear flowcharts. It runs entirely in the browser and requires no account or API key to generate a figure.
+- **Charts & schematics** generates charts, flowcharts, and multi-panel graphical abstracts locally. It requires no account and exports editable SVG and high-resolution PNG. For a graphical abstract, write one panel per line as Heading: item, item, with an optional Title: line.
+- **AI image generator** uses Puter.js for prompt-to-image and optional image-to-image generation. Visitors sign in to Puter to use their free monthly allowance. The app does not use a shared API key or store prompts or uploaded references. Prompts and reference images are sent to Puter when a visitor generates an image.
 
 ## Run locally
 
