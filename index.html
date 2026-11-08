@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create research charts and diagrams from a text prompt, then export them as SVG or PNG.">
+  <title>AI4SFiguresByasim</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./figures.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="top-inner">
+      <a class="brand" href="./" aria-label="AI4SFiguresByasim home">
+        <img class="brand-logo" src="./ai4science-logo.png" alt="AI4Science" width="145" height="47">
+        <span class="brand-name">AI4SFiguresByasim</span>
+      </a>
+      <span class="pill"><i></i> Free · No API key</span>
+    </div>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="intro-title">
+      <p class="eyebrow"><span></span> RESEARCH FIGURE WORKSPACE</p>
+      <h1 id="intro-title">Turn prompts into figures.</h1>
+      <p>Describe a chart or diagram, preview it instantly, and download a figure for your paper, slides, or report.</p>
+    </section>
+    <div class="workspace">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="panel-heading">
+          <span class="step">01</span>
+          <div><h2 id="input-title">Describe your figure</h2><p>Start with a prompt or choose an example.</p></div>
+        </div>
+        <form id="form">
+          <div class="field">
+            <label for="prompt">Figure prompt</label>
+            <textarea id="prompt" maxlength="1800" rows="6" required spellcheck="true" aria-describedby="prompt-help" placeholder="Create a bar chart titled Model accuracy. DrugCMF: 92, Baseline: 81, Random forest: 76. Y-axis: Accuracy (%)."></textarea>
+            <p id="prompt-help" class="hint">Use label: value for charts, (x, y) pairs for scatter plots, and arrows (→) between workflow steps.</p>
+          </div>
+          <div class="settings">
+            <div class="field"><label for="kind">Figure type</label>
+              <select id="kind">
+                <option value="auto">Auto-detect</option><option value="bar">Bar chart</option><option value="line">Line chart</option><option value="scatter">Scatter plot</option><option value="pie">Pie chart</option><option value="flow">Flowchart</option>
+              </select>
+            </div>
+            <div class="field"><label for="palette">Palette</label>
+              <select id="palette"><option value="teal">Teal</option><option value="indigo">Indigo</option><option value="amber">Amber</option><option value="mono">Grayscale</option></select>
+            </div>
+          </div>
+          <button class="generate" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2ZM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z"/></svg> Generate figure</button>
+          <p id="error" role="alert" hidden></p>
+        </form>
+        <div class="examples">
+          <h3>TRY AN EXAMPLE</h3>
+          <div id="examples" class="chips"></div>
+        </div>
+      </section>
+      <section class="panel output-panel" aria-labelledby="preview-title">
+        <div class="panel-heading preview-heading">
+          <span class="step">02</span>
+          <div><h2 id="preview-title">Figure preview</h2><p id="preview-note" aria-live="polite">An example to get you started.</p></div>
+          <span class="tag" id="figure-badge">Bar chart</span>
+        </div>
+        <div class="canvas"><div class="sheet" id="sheet"></div></div>
+        <div class="exports">
+          <span>Export figure</span>
+          <button type="button" id="svg-download">Download SVG</button>
+          <button type="button" id="png-download">Download PNG</button>
+        </div>
+        <p id="export-status" class="hint" aria-live="polite"></p>
+      </section>
+    </div>
+    <footer><span>AI4SFiguresByasim</span><span>Figures are generated in your browser.</span></footer>
+  </main>
+</body>
+</html>
